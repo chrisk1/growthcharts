@@ -1,7 +1,7 @@
-#backups/*
-#builds/*
-#certificates/*
-#screenshots/*
+'#backups/*'
+'#builds/*'
+'#certificates/*'
+'#screenshots/*'
 1testing/*
 test-qunit.htm
 growth-sublime*
