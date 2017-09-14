@@ -1,1 +1,0 @@
-First version that includes text rather than number as input fields... (android correction)
