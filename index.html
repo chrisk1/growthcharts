@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Growth Charts</title>
+<meta name="description" content="Growth charts WHO-UK">
+
+<!-- standard viewport tag to set the viewport to the device's width
+	, Android 2.3 devices need this so 100% width works properly and
+	doesn't allow children to blow up the viewport width-->
+<meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
+<!-- width=device-width causes the iPhone 5 to letterbox the app, so
+	we want to exclude it for iPhone 5 to allow full screen apps -->
+<meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+<link href="css/jquery.mobile.squareui.css" rel="stylesheet" type="text/css" />
+<link href="js/mobiscroll/css/mobiscroll.icons.css" rel="stylesheet" type="text/css" />
+<link href="js/mobiscroll/css/mobiscroll.scroller.css" rel="stylesheet" type="text/css" />
+<link href="js/mobiscroll/css/mobiscroll.scroller.ios7.css" rel="stylesheet" type="text/css" />
+<link href="js/mobiscroll/css/mobiscroll.animation.css" rel="stylesheet" type="text/css" />
+
+<style>
+
+body {
+	/* background-image:url('images/stripe_bg-old.png') !important;
+	background-repeat:repeat !important; */
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* prevent copy/paste behaviour */
+ *:not(input):not(textarea) {
+-webkit-user-select: none; /* disable selection/Copy of UIWebView */
+-webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
+}      
+
+h1 {
+	margin-top: 0px;
+	padding-top: 5px;
+}
+
+#main, #results {
+	background-color: #FFF;	
+}
+
+#ageresultsbox {
+	border: 1px solid #ccc;
+	padding: 10px;
+	margin-bottom: 20px;
+	background-image:url('images/stripe_bg-old.png') !important;
+	background-repeat:repeat !important;
+
+}
+
+#ageresultsbox #title {
+	font-size: 20px;
+	font-weight: bold;
+	font-family: Lato, Helvetica; sans-serif;
+}
+
+#ageresultsbox #titlenobold {
+	font-size: 20px;
+	font-weight: normal;
+	font-family: Lato, Helvetica; sans-serif;
+	color: #666;
+}
+
+.resultsheadercell {
+	font-size: 18px;
+	color: #111;
+	font-weight: bold;
+	font-family: Lato, Helvetica; sans-serif;
+}
+
+#message {
+	font-size: 13px;
+	font-weight: bold;
+	margin-bottom: 0px;
+	margin-top: -5px;
+}
+
+#footnotes {
+	font-size: 13px;
+}
+
+.highcharts-container {
+	width: 100% !important;
+}
+
+/* Fiddling with Mobiscroll box */
+#select-choice-a-button span {
+	display: none;
+}
+
+#select-choice-a_dummy {
+	color: #FFF;
+	font-weight: bold;
+	padding: 0 !important;
+}
+
+.ui-select #select-choice-a-button {
+	padding-top: 3px !important;
+	padding-bottom: 4px !important;
+	padding-left: 20px !important;
+}
+
+.ui-select .ui-input-text {
+	background: transparent !important;
+	border: 0 !important;
+	margin: 0px !important;
+}
+
+.greytext {
+	color: #999;
+}
+
+</style>
+
+</head>
+
+<body>
+
+   <div data-role="page" id="main">
+ 
+        <div data-role="header" data-position="fixed" style="text-align: center; padding-top: 8px; padding-bottom: 5px">
+            <img src="images/growth-top-logo-white.png" width="219" height="42">
+        </div><!-- /header -->
+ 
+        <div data-role="content" id="main-content">
+
+		<div style="margin-bottom: -9px; font-size: 16px">Date of birth:</div>
+		<input id="dob" name="dob" style="display:none" />
+
+		<div class="ui-grid-b">
+		<div class="ui-block-a" style="padding-right: 5px">
+			<div data-role="fieldcontain">
+				<label for="name" style="margin-bottom: 0px">Weight:</label>
+				<input type="text" class="numericalinput" placeholder="kg" name="weight" id="weight" value=""  />
+			</div>	
+		</div>
+		<div class="ui-block-b">
+			<div data-role="fieldcontain">
+				<label for="name" style="margin-bottom: 0px">Head:</label>
+				<input type="text" class="numericalinput" placeholder="cm"  name="head" id="head" value=""  />
+			</div>
+		</div>
+		<div class="ui-block-c" style="padding-left: 5px">
+			<div data-role="fieldcontain">
+				<label for="name" style="margin-bottom: 0px">Height:</label>
+				<input type="text" class="numericalinput" placeholder="cm" name="length" id="length" value=""  />
+			</div>
+		</div>
+		</div>
+
+
+<div class="ui-grid-a">
+<div class="ui-block-a">
+<div data-role="fieldcontain">
+		<fieldset data-theme="d" data-role="controlgroup" data-type="horizontal" >
+			<input type="radio" name="sex" id="sex-male" value="m" />
+			<label for="sex-male">M <img src="images/Small-Mars_symbol.png" height=16></label>
+			<input type="radio" name="sex" id="sex-female" value="f" />
+			<label for="sex-female">F <img src="images/Small-Venus_symbol.png" height=16></label>
+		</fieldset>
+</div>
+</div>
+<div class="ui-block-b">
+      <div data-role="fieldcontain">
+        <select name="select-choice" id="select-choice-a" data-native-menu="true" data-prevent-focus-zoom="true" data-theme="e" data-form="ui-btn-up-a">
+        <optgroup label="23 weeks">
+          <option value="23+1">23+4</option>
+          <option value="23+2">23+4</option>
+          <option value="23+3">23+4</option>
+          <option value="23+4">23+4</option>
+          <option value="23+4">23+4</option>
+          <option value="23+5">23+5</option>
+          <option value="23+6">23+6</option>
+		</optgroup>
+        <optgroup label="24 weeks">
+          <option value="24+0">24+0</option>
+          <option value="24+1">24+1</option>
+          <option value="24+2">24+2</option>
+          <option value="24+3">24+3</option>
+          <option value="24+4">24+4</option>
+          <option value="24+5">24+5</option>
+          <option value="24+6">24+6</option>
+		</optgroup>
+		<optgroup label="25 weeks">
+          <option value="25+0">25+0</option>
+          <option value="25+1">25+1</option>
+          <option value="25+2">25+2</option>
+          <option value="25+3">25+3</option>
+          <option value="25+4">25+4</option>
+          <option value="25+5">25+5</option>
+          <option value="25+6">25+6</option>
+        </optgroup>
+        <optgroup label="26 weeks">
+          <option value="26+0">26+0</option>
+          <option value="26+1">26+1</option>
+          <option value="26+2">26+2</option>
+          <option value="26+3">26+3</option>
+          <option value="26+4">26+4</option>
+          <option value="26+5">26+5</option>
+          <option value="26+6">26+6</option>
+        </optgroup>
+        <optgroup label="27 weeks">
+          <option value="27+0">27+0</option>
+          <option value="27+1">27+1</option>
+          <option value="27+2">27+2</option>
+          <option value="27+3">27+3</option>
+          <option value="27+4">27+4</option>
+          <option value="27+5">27+5</option>
+          <option value="27+6">27+6</option>
+        </optgroup>
+        <optgroup label="28 weeks">
+          <option value="28+0">28+0</option>
+          <option value="28+1">28+1</option>
+          <option value="28+2">28+2</option>
+          <option value="28+3">28+3</option>
+          <option value="28+4">28+4</option>
+          <option value="28+5">28+5</option>
+          <option value="28+6">28+6</option>
+       	</optgroup>
+        <optgroup label="29 weeks">
+          <option value="29+0">29+0</option>
+          <option value="29+1">29+1</option>
+          <option value="29+2">29+2</option>
+          <option value="29+3">29+3</option>
+          <option value="29+4">29+4</option>
+          <option value="29+5">29+5</option>
+          <option value="29+6">29+6</option>
+        </optgroup>
+        <optgroup label="30 weeks">
+          <option value="30+0">30+0</option>
+          <option value="30+1">30+1</option>
+          <option value="30+2">30+2</option>
+          <option value="30+3">30+3</option>
+          <option value="30+4">30+4</option>
+          <option value="30+5">30+5</option>
+          <option value="30+6">30+6</option>
+        </optgroup>
+        <optgroup label="31 weeks">
+          <option value="31+0">31+0</option>
+          <option value="31+1">31+1</option>
+          <option value="31+2">31+2</option>
+          <option value="31+3">31+3</option>
+          <option value="31+4">31+4</option>
+          <option value="31+5">31+5</option>
+          <option value="31+6">31+6</option>
+        </optgroup>
+        <optgroup label="32 weeks">
+          <option value="32+0">32+0</option>
+          <option value="32+1">32+1</option>
+          <option value="32+2">32+2</option>
+          <option value="32+3">32+3</option>
+          <option value="32+4">32+4</option>
+          <option value="32+5">32+5</option>
+          <option value="32+6">32+6</option>
+        </optgroup>
+        <optgroup label="33 weeks">
+          <option value="33+0">33+0</option>
+          <option value="33+1">33+1</option>
+          <option value="33+2">33+2</option>
+          <option value="33+3">33+3</option>
+          <option value="33+4">33+4</option>
+          <option value="33+5">33+5</option>
+          <option value="33+6">33+6</option>
+        </optgroup>
+        <optgroup label="34 weeks">
+          <option value="34+0">34+0</option>
+          <option value="34+1">34+1</option>
+          <option value="34+2">34+2</option>
+          <option value="34+3">34+3</option>
+          <option value="34+4">34+4</option>
+          <option value="34+5">34+5</option>
+          <option value="34+6">34+6</option>
+        </optgroup>
+        <optgroup label="35 weeks">
+          <option value="35+0">35+0</option>
+          <option value="35+1">35+1</option>
+          <option value="35+2">35+2</option>
+          <option value="35+3">35+3</option>
+          <option value="35+4">35+4</option>
+          <option value="35+5">35+5</option>
+          <option value="35+6">35+6</option>
+        </optgroup>
+        <optgroup label="36 weeks">
+          <option value="36+0">36+0</option>
+          <option value="36+1">36+1</option>
+          <option value="36+2">36+2</option>
+          <option value="36+3">36+3</option>
+          <option value="36+4">36+4</option>
+          <option value="36+5">36+5</option>
+          <option value="36+6">36+6</option>
+        </optgroup>
+        <optgroup label="37 weeks">
+          <option value="37+0">37+0</option>
+          <option value="37+1">37+1</option>
+          <option value="37+2">37+2</option>
+          <option value="37+3">37+3</option>
+          <option value="37+4">37+4</option>
+          <option value="37+5">37+5</option>
+          <option value="37+6">37+6</option>
+        </optgroup>
+        <optgroup label="38 weeks">
+          <option value="38+0">38+0</option>
+          <option value="38+1">38+1</option>
+          <option value="38+2">38+2</option>
+          <option value="38+3">38+3</option>
+          <option value="38+4">38+4</option>
+          <option value="38+5">38+5</option>
+          <option value="38+6">38+6</option>
+        </optgroup>
+        <optgroup label="39 weeks">
+          <option value="39+0">39+0</option>
+          <option value="39+1">39+1</option>
+          <option value="39+2">39+2</option>
+          <option value="39+3">39+3</option>
+          <option value="39+4">39+4</option>
+          <option value="39+5">39+5</option>
+          <option value="39+6">39+6</option>
+        </optgroup>
+        <optgroup label="40 weeks">
+          <option value="40+0" selected>40+0</option>
+          <option value="40+1">40+1</option>
+          <option value="40+2">40+2</option>
+          <option value="40+3">40+3</option>
+          <option value="40+4">40+4</option>
+          <option value="40+5">40+5</option>
+          <option value="40+6">40+6</option>
+        </optgroup>
+        <optgroup label="41 weeks">
+          <option value="41+0">41+0</option>
+          <option value="41+1">41+1</option>
+          <option value="41+2">41+2</option>
+          <option value="41+3">41+3</option>
+          <option value="41+4">41+4</option>
+          <option value="41+5">41+5</option>
+          <option value="41+6">41+6</option>
+        </optgroup>
+        <optgroup label="42 weeks">
+          <option value="42+0">42+0</option>
+          <option value="42+1">42+1</option>
+          <option value="42+2">42+2</option>
+          <option value="42+3">42+3</option>
+          <option value="42+4">42+4</option>
+          <option value="42+4">42+5</option>
+          <option value="42+4">42+6</option>
+          </optgroup>
+		</select>
+      </div>
+</div>
+</div>
+
+
+
+<!-- <button type="submit" data-theme="c">Calculate</button> -->
+
+<a href="#" data-transition="slide" data-theme="c" data-role="button" id="calculatebtn">Calculate Centiles</a>
+
+
+
+    </div><!-- /content -->
+ 
+	<div data-role="footer" data-position="fixed">
+		<h4><a href="#splashscreen" style="text-decoration: none;" data-transition="flip">Source information and Disclaimer</a></h4>
+	</div><!-- /footer -->
+
+</div>
+
+<!--- ###### RESULTS PAGE #### -->
+
+   <div data-role="page" id="results">
+ 
+        <div data-role="header" data-position="fixed" style="text-align: center; padding-top: 8px; padding-bottom: 5px">
+            <img src="images/growth-top-logo-white.png" width="219" height="42">
+        </div><!-- /header -->
+ 
+        <div data-role="content">
+		<div id="ageresultsbox">Loading...<br><span id="title"></span></div>
+		<div id="message">Growth Chart</div>
+
+<div id="container" style="height: 150px; margin-bottom: 10px;"></div>
+
+	<table width="100%" cellspacing="0" cellpadding="0" style="font-size: 0.9em">
+		<tr>
+			<td class="resultsheadercell" valign="top">Weight</td>
+			<td><span id="weightval">x</span></td>
+			<td><span id="weighthuman">xth centile (xth)</span></td>
+		</tr>
+		<tr>
+			<td class="resultsheadercell" valign="top">Head</td>
+			<td><span id="headval">x</span></td>
+			<td><span id="headhuman">xth centile (xth)</span></td>
+		</tr>
+		<tr>
+			<td  class="resultsheadercell" valign="top">Length</td>
+			<td><span id="lengthval">xcm</span></td>
+			<td><span id="lengthhuman">xth centile (xrd)</span></td>
+		</tr>
+		<tr id="daterow">
+			<td colspan="3" style="vertical-align: middle; padding-top: 10px;">Measured on <span id="datetodayval">x/x/x</span> <img src="images/clock40.png" width="20" height="20" id="dateicon" style="margin-left: 5px; vertical-align:middle;"></td>
+			<td> </td>
+		</tr>
+
+	</table>
+
+	<div class="ui-grid-a" style="margin-top: 15px">
+	<div class="ui-block-b"><a id="modifycentile" data-transition="slide" data-direction="reverse" data-rel="back" data-theme="c" data-role="button" style="margin-left: 0px !important">Modify</a></div>
+	<div class="ui-block-b"><a href="#main" id="newcentile" data-transition="slide" data-theme="d" data-role="button" style="margin-right: 0px !important">New Chart</a></div>
+	</div>
+
+	<div id="footnotes" style="display:none; margin-top: 15px; margin-bottom: 0px"><b>Expected date of delivery:</b> <span id="babyedd">Awaited</span><br>
+	* Day 1 = baby's first day of life.</div>
+
+	<input id="customdate" data-role="none" style="display:none">
+
+    </div><!-- /content -->
+ 
+	<div data-role="footer" data-position="fixed">
+		<h4><a href="#splashscreen" style="text-decoration: none;" data-transition="flip">Source information and Disclaimer</a></h4>
+	</div><!-- /footer -->
+
+</div>
+
+
+
+
+
+		<div data-role="page" id="splashscreen" data-title="Disclaimer and Sources">
+
+			<div data-role="header">
+				            <img src="images/growth-top-logo-white-small.png" width="219" height="42">
+							<a href="#main" data-icon="check" data-theme="b" class="ui-btn-right" style="margin-top: 2px; margin-right: 5px; color: #ddd" data-transition="flip">Accept</a>
+			</div>
+
+			<div data-role="content" >
+			<h2 style="margin-top: 30px">Important Notice</h2>
+
+			<b>Growth Charts UK-WHO is the first mobile app to use UK-specific growth chart data to help health professionals to calculate growth centiles for babies and children.</b><br><br>Growth centile calculations are often prone to error with paper charts, and this app aims to make this process quicker and more reliable.<br><br>
+
+			Data used in this app has been provided by the Royal College of Paediatrics and Child Health (RCPCH), and is a combination of the Neonatal and Infant Close Monitoring Growth Chart (NICM), the UK WHO 0-4 years growth chart, and the UK Growth chart (2-18).<br><br>
+
+			The underlying data is from a combination of the following sources:<br>
+			<ul>
+				<li><b>British 1990</b> growth reference for height and weight. Published in 1995 and revised in 1996. The reference for head circumference was published in 1998.<br>
+				<ul><li>Freeman JV, Cole TJ, Chinn S, Jones PRM, White E M, Preece MA. <i>Cross sectional stature and weight reference curves for the UK, 1990.</i> Archives of Disease in Childhood 1995;73:17-24.</li>
+				<li>Cole TJ, Freeman JV, Preece MA. <i>British 1990 growth reference centiles for weight, height, body mass index and head circumference fitted by maximum penalized likelihood. </i>Statistics in Medicine 1998;17:407-429.<br><br></li></ul></li>
+
+				<li><b>UK-WHO Child Growth Standards</b><br>
+				Data for the 2 weeks to 6 months corrected age and 6 months to 2 years corrected age charts. These charts are derived from the UK-WHO 0-4 years growth charts and use World Health Organization (WHO) data on healthy, non-deprived breastfed children of mothers who did not smoke.
+				
+				<ul><li>WHO Child Growth Standards - <a href="http://www.who.int/childgrowth/en" class="external">www.who.int/childgrowth/en</a></li>
+				<li>WHO Multicentre Growth Reference Study Group. WHO Child Growth Standards: Length/Height-for-age, Weight-for-age, Weight-for-length, Weight-for-height and Body Mass Index-for age. Methods and Development. 2006. ISBN 92 4 154693 X.</li>
+				<li>WHO Multicentre Growth Reference Study Group. WHO Child Growth Standards: Head circumference-for-age, arm circumference-for-age, triceps skinfold-for-age and subscapular skinfold-for age. Methods and Development. 2007. ISBN 978 92 4 154718 5.
+				<br><br></li></ul></li>
+
+				<li><b>Methodology</b><br>
+				This app uses methodology from the US CDC: "Percentile Data Files with LMS Values, Centers for Disease Control and Prevention", full information at <a href="http://www.cdc.gov/growthcharts/percentile_data_files.htm" class="external">the CDC website</a>.<br><br></li>
+
+				<li><b>Testing and quality assurance</b><br>
+				This app has been rigorously tested against the RCPCH Growth Charts. More information can be found at the Royal College of Paediatrics and Child Health at <a href="http://www.rcpch.ac.uk/growthcharts" class="external">http://www.rcpch.ac.uk/growthcharts</a>. If you do find an error, of course please let us know - <a href="mailto:apps@incubate.co.uk">click here to send an email</a>.</li>
+			</ul>
+
+			<h2 style="padding-left: 0px">About</h2>
+			Designed by Chris Kelly, a paediatrician at the Evelina Children's Hospital in London, after far too many hours trying to work out centile calculations from paper charts.<br><br>
+
+			Thank you to Dilshad Marikar and Damian Rowland, who initially encouraged the conversion of the original website version at <a href="http://www.paediatrics.co.uk/nicu/growth-charts" class="external">Paediatrics.co.uk</a> into app form.
+
+
+			<h2 style="padding-left: 0px">Legal Disclaimer</h2>
+			<b>This app is provided for information only, intended to be used by health professionals. The information found on Paediatrics.co.uk and its associated apps is NOT a substitute for professional medical care by a qualified doctor or other health care professional. ALWAYS check with your doctor if you have any concerns about your condition or treatment. Paediatrics.co.uk is not responsible or liable, directly or indirectly, for ANY form of damages whatsoever resulting from the use (or misuse) of information contained in or implied by the information on this site. Full legal disclaimer available at <a href="http://www.paediatrics.co.uk/info/legal" class="external">http://www.paediatrics.co.uk/info/legal</a></b>
+
+			<h2 style="padding-left: 0px">Acknowledgements</h2>
+
+			<b>JQuery</b>, <b>JQuery UI</b> and <b>JQuery Mobile</b><br>Copyright 2013 jQuery Foundation and other contributors
+			<br>http://jquery.com/<br><br>
+
+			Permission is hereby granted, free of charge, to any person obtaining
+			a copy of this software and associated documentation files (the
+			"Software"), to deal in the Software without restriction, including
+			without limitation the rights to use, copy, modify, merge, publish,
+			distribute, sublicense, and/or sell copies of the Software, and to
+			permit persons to whom the Software is furnished to do so, subject to
+			the following conditions:<br><br>
+
+			The above copyright notice and this permission notice shall be
+			included in all copies or substantial portions of the Software.<br><br>
+
+			THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+			EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+			MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+			NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+			LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+			OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+			WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<br><br>
+
+			<b>Highcharts 4.0.3 JS v/Highstock 2.0.3</b><br>Copyright 2009-2014 Torstein Honsi<br><br>
+
+			This product is used under the Creative Commons Attribution-NonCommercial 3.0 License. More information at www.highcharts.com/license.<br><br>
+
+			<b>Moment.js v2.8.2</b><br>Copyright Tim Wood, Iskren Chernev, Moment.js contributors<br><br>
+			<b>Moment-Range</b><br>Copyright 2014 Rob Dawson<br><br>
+
+			These two libraries are used licensed under The MIT License (MIT):<br><br>
+
+			Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br><br>
+
+			The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br><br>
+
+			THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.<br><br>
+
+			<a href="#main" data-theme="b" data-transition="flip"data-transition="flip" data-role="button">Accept</a>
+
+			</div>
+		</div>
+
+<script src="phonegap.js"></script>
+<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="js/jquery.mobile-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/mobiscroll/js/mobiscroll.core.js"></script>
+<script type="text/javascript" src="js/mobiscroll/js/mobiscroll.appframework.js"></script>
+<script type="text/javascript" src="js/mobiscroll/js/mobiscroll.select.js"></script>
+<script type="text/javascript" src="js/mobiscroll/js/mobiscroll.scroller.js"></script>
+<script type="text/javascript" src="js/mobiscroll/js/mobiscroll.scroller.ios.js"></script>
+<script type="text/javascript" src="js/mobiscroll/js/mobiscroll.datetime.js"></script>
+<script type="text/javascript" src="js/datejs/date-en-GB.js"></script>
+<script type="text/javascript" src="js/datejs/time.js"></script>
+<script type="text/javascript" src="js/moment.min.js"></script>
+<script type="text/javascript" src="js/readable-range.js"></script>
+<script type="text/javascript" src="js/highcharts-custom.js"></script>
+<script type="text/javascript" src="js/growth.js"></script>
+<script type="text/javascript" src="js/fastclick.js"></script>
+
+</body>
+</html>
