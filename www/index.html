@@ -87,6 +87,10 @@ h1 {
 	font-size: 13px;
 }
 
+#zscorefootnotes {
+  font-size: 13px;
+}
+
 .highcharts-container {
 	width: 100% !important;
 }
@@ -398,10 +402,15 @@ h1 {
 			<td><span id="headhuman">xth centile (xth)</span></td>
 		</tr>
 		<tr>
-			<td  class="resultsheadercell" valign="top">Length</td>
+			<td class="resultsheadercell" valign="top">Length</td>
 			<td><span id="lengthval">xcm</span></td>
 			<td><span id="lengthhuman">xth centile (xrd)</span></td>
 		</tr>
+    <tr id="bmirow">
+      <td class="resultsheadercell" valign="top">BMI</td>
+      <td><span id="bmival">x</span></td>
+      <td><span id="bmihuman">xth centile (xrd)</span></td>
+    </tr>
 		<tr id="daterow">
 			<td colspan="3" style="vertical-align: middle; padding-top: 10px;">Measured on <span id="datetodayval">x/x/x</span> <img src="images/calendar200.png" width="20" height="20" id="dateicon" style="margin-left: 5px; vertical-align:middle;"></td>
 			<td> </td>
@@ -415,16 +424,17 @@ h1 {
 	</div>
 
 	<div id="footnotes" style="display:none; margin-top: 15px; margin-bottom: 0px"><b>Expected date of delivery:</b> <span id="babyedd">Awaited</span><br>
-	* Day 1 = baby's first day of life.<br><br>
+	* Day 1 = baby's first day of life.<br></div>
 
+  <div id="zscorefootnotes" style="margin-top: 15px;">
   <b>Z-scores:</b><br>
   Weight: <span id="weightzscore">Missing measurement</span><br>
   Head circumference: <span id="hczscore">Missing measurement</span><br>
-  Length: <span id="lengthzscore">Missing measurement</span><br><br>
+  Length: <span id="lengthzscore">Missing measurement</span><br>
+  <div id="bmizscoredisplay">BMI: <span id="bmizscore">Missing measurement</span><br></div>
 
-  <div id="termmsg" style="display: none"><b>Note about term centiles</b><br>
+  <div id="termmsg" style="display: none"><br><b>Note about term centiles</b><br>
   Remember the RCPCH growth chart recommends plotting birth data for babies born between 37-42 completed weeks at 40 weeks. This app follows that convention.</div>
-
   </div>
 
 	<input id="customdate" data-role="none" style="display:none">
