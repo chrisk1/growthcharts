@@ -3,10 +3,10 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id        = "com.incubate.growthcharts"
         versionCode="20" 
-        version   = "1.1.0">
+        version   = "2.0.0">
 
         <gap:config-file platform="ios" parent="CFBundleShortVersionString">
-		<string>8</string>
+		<string>9</string>
 		</gap:config-file>
 
     <!-- versionCode is optional and Android only -->
